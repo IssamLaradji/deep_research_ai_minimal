@@ -87,7 +87,7 @@ def main():
     os.makedirs(results_dir)
 
     # Get user query
-    query = "who is st patrick"
+    query = "State of tariffs"
 
     # Search DuckDuckGo
     print(f"Searching DuckDuckGo for: {query}")
