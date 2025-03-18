@@ -74,7 +74,20 @@ def save_content(content, url, results_dir):
         f.write(f"Source URL: {url}\n\n")
         f.write(content)
 
-    return filepath
+    return filepath, filename
+
+
+def save_summary(content, filename, results_dir):
+    """
+    Save the summarized content to a file in the results directory.
+    """
+    summary_filename = f"summarized_{filename}"
+    summary_filepath = os.path.join(results_dir, summary_filename)
+
+    with open(summary_filepath, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    return summary_filepath
 
 
 def main():
@@ -85,6 +98,11 @@ def main():
 
         shutil.rmtree(results_dir)
     os.makedirs(results_dir)
+
+    # Import SummarizerAgent
+    from agents import SummarizerAgent, InsightAgent
+
+    summarizer = SummarizerAgent()
 
     # Get user query
     query = "State of tariffs"
@@ -99,6 +117,7 @@ def main():
 
     # Process each result
     saved_files = []
+    summarized_files = []
     for i, result in enumerate(search_results):
         url = result.get("href")
         if not url:
@@ -110,10 +129,27 @@ def main():
         content = get_url_content(url)
 
         # Save content
-        filepath = save_content(content, url, results_dir)
+        filepath, filename = save_content(content, url, results_dir)
         saved_files.append(filepath)
 
         print(f"Content saved to: {filepath}")
+
+        # Prepare content for summarization (limit to 500 words)
+        words = content.split()
+        if len(words) > 500:
+            content_for_summary = " ".join(words[:500])
+        else:
+            content_for_summary = content
+
+        # Generate summary
+        print(f"Generating summary...")
+        summary = summarizer.process(content_for_summary)
+
+        # Save summary
+        summary_filepath = save_summary(summary, filename, results_dir)
+        summarized_files.append(summary_filepath)
+
+        print(f"Summary saved to: {summary_filepath}")
 
         # Add a small delay to be nice to servers
         if i < len(search_results) - 1:
@@ -122,6 +158,19 @@ def main():
     print(
         f"\nSearch complete. {len(saved_files)} results saved to the '{results_dir}' directory."
     )
+    print(f"Summaries created for {len(summarized_files)} files.")
+
+    # Generate insights from all summaries
+    print("\nGenerating insights from all summaries...")
+    insight_agent = InsightAgent()
+    insights = insight_agent.process(summarized_files)
+
+    # Save insights to file
+    insights_filepath = os.path.join(results_dir, "insights.txt")
+    with open(insights_filepath, "w", encoding="utf-8") as f:
+        f.write(insights)
+
+    print(f"Insights saved to: {insights_filepath}")
 
 
 if __name__ == "__main__":
