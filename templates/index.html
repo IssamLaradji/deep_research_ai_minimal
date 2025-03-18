@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Research Agent</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .search-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .search-input {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .search-button {
+            padding: 10px 20px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .search-button:hover {
+            background-color: #357ae8;
+        }
+        .results {
+            margin-top: 30px;
+        }
+        .result-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .result-title {
+            color: #1a0dab;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .result-body {
+            color: #545454;
+            margin-bottom: 5px;
+        }
+        .result-url {
+            color: #006621;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Deep Research Agent</h1>
+    
+    <div class="search-container">
+        <form method="POST">
+            <input type="text" name="query" class="search-input" placeholder="Search for anything..." value="{{ query }}">
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </div>
+    
+    {% if results %}
+    <div class="results">
+        <h2>Search Results</h2>
+        {% for result in results %}
+        <div class="result-item">
+            <div class="result-title">
+                <a href="{{ result.href }}" target="_blank">{{ result.title }}</a>
+            </div>
+            <div class="result-body">{{ result.body }}</div>
+            <div class="result-url">{{ result.href }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</body>
+</html> 
